@@ -4,3 +4,4 @@ catboost
 openpyxl
 scikit-learn
 lightgbm
+tqdm
