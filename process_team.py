@@ -19,7 +19,7 @@ def lag_features_team(df, n_period,cols):
     for lag in tqdm(range(1, n_period + 1)):
         for col in tqdm(cols):      
            
-            df[f'match_lag_{col}_{lag}'] = df.groupby(['HOME_TEAM_ID','VISITOR_TEAM_ID'])[col].shift(lag)
+            df[f'match_lag_{col}_{lag}'] = df.groupby(['HOME_TEAM','VISITOR_TEAM'])[col].shift(lag)
             
             if 'home' in col:
                 groupby_col = 'HOME_TEAM_ID'
@@ -30,12 +30,12 @@ def lag_features_team(df, n_period,cols):
 
 def rolling_mean_features_team(df,cols,window_size):
     for col in tqdm(cols):
-        df[f'match_rolling_mean_{col}_{window_size}'] = df.groupby(['HOME_TEAM_ID','VISITOR_TEAM_ID'])[col].rolling(window=window_size, min_periods=2).mean().reset_index(level=[0, 1], drop=True)
-        df[f'match_rolling_mean_{col}_{window_size}'] = df.groupby(['HOME_TEAM_ID','VISITOR_TEAM_ID'])[f'match_rolling_mean_{col}_{window_size}'].shift(fill_value=None)
+        df[f'match_rolling_mean_{col}_{window_size}'] = df.groupby(['HOME_TEAM','VISITOR_TEAM'])[col].rolling(window=window_size, min_periods=2).mean().reset_index(level=[0, 1], drop=True)
+        df[f'match_rolling_mean_{col}_{window_size}'] = df.groupby(['HOME_TEAM','VISITOR_TEAM'])[f'match_rolling_mean_{col}_{window_size}'].shift(fill_value=None)
         if 'home' in col:
-            groupby_col = 'HOME_TEAM_ID'
+            groupby_col = 'HOME_TEAM'
         elif 'away' in col:
-            groupby_col = 'VISITOR_TEAM_ID'
+            groupby_col = 'VISITOR_TEAM'
         df[f'rolling_mean_{col}_{window_size}'] = df.groupby([groupby_col])[col].rolling(window=window_size, min_periods=2).mean().reset_index(level=0, drop=True)
         df[f'rolling_mean_{col}_{window_size}'] = df.groupby([groupby_col])[f'rolling_mean_{col}_{window_size}'].shift(fill_value=None)
     return df
